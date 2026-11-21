@@ -27,7 +27,7 @@ services:
     restart: unless-stopped
 
   moodle:
-    image: ${MOODLE_IMAGE:-ghcr.io/pikapods/docker-moodle:latest}
+    image: ${MOODLE_IMAGE:-ghcr.io/alsalehi/docker-moodle:latest}
     depends_on:
       mariadb:
         condition: service_healthy
