@@ -7,6 +7,7 @@ APP_DIR=/var/www/html
 CONFIG_DIR=/data/config
 CONFIG_FILE=/data/config/config.php
 DATAROOT=/data/moodledata
+PLUGINS_ROOT=/data/plugins
 
 log() { printf '[moodle-bootstrap] %s\n' "$*" >&2; }
 die() { log "ERROR: $*"; exit 1; }
@@ -83,8 +84,8 @@ ADMIN_USER=${ADMIN_USER:-admin}
 # ---------------------------------------------------------------------------
 # 2. Ensure /data tree exists.
 # ---------------------------------------------------------------------------
-mkdir -p "$CONFIG_DIR" "$DATAROOT"
-# Moodle 5.3 writes require_once(__DIR__ . '/lib/setup.php') into config.php.
+mkdir -p "$CONFIG_DIR" "$DATAROOT" "$PLUGINS_ROOT"
+# Moodle 5.2 writes require_once(__DIR__ . '/lib/setup.php') into config.php.
 # Because our canonical config.php lives in /data/config and is symlinked from
 # the app root, provide the expected relative lib path inside the volume.
 ln -sfn "$APP_DIR/lib" "$CONFIG_DIR/lib"
@@ -93,6 +94,11 @@ ln -sfn "$APP_DIR/lib" "$CONFIG_DIR/lib"
 chmod "$DATAROOT_CHMOD" "$DATAROOT" 2>/dev/null || \
     log "WARN: chmod $DATAROOT_CHMOD $DATAROOT failed (continuing)"
 
+chown www-data:www-data "$PLUGINS_ROOT" 2>/dev/null || \
+    log "WARN: chown www-data:www-data $PLUGINS_ROOT failed (continuing)"
+
+chmod "$DATAROOT_CHMOD" "$PLUGINS_ROOT" 2>/dev/null || \
+    log "WARN: chmod $DATAROOT_CHMOD $PLUGINS_ROOT failed (continuing)"
 # ---------------------------------------------------------------------------
 # 3. Wait for DB — server-up *and* credentials valid against the target DB.
 #    A bare `mysqladmin ping` / `pg_isready` returns success before
@@ -280,7 +286,7 @@ mv "$PATCHED_TMP" "$CONFIG_FILE"
 rm -f "$BLOCK_TMP"
 
 # ---------------------------------------------------------------------------
-# 6. Plugin persistence — restore captured plugins as symlinks into the
+# 6. Plugin persistence — restore captured plugins as copies into the
 #    codebase BEFORE s6 starts nginx/php-fpm (this oneshot gates the
 #    services), so the files exist before Moodle boots. This is the line that
 #    eliminates "Not found on disk!" after a recreate. The one-shot capture

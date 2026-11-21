@@ -28,7 +28,7 @@ ARG BUILD_DATE=
 
 LABEL org.opencontainers.image.title="Moodle" \
       org.opencontainers.image.description="Self-maintained Moodle container" \
-      org.opencontainers.image.source="https://github.com/pikapods/docker-moodle" \
+      org.opencontainers.image.source="https://github.com/alsalehi/docker-moodle" \
       org.opencontainers.image.licenses="GPL-3.0" \
       org.opencontainers.image.version="${MOODLE_VERSION}-${IMAGE_REVISION}" \
       org.opencontainers.image.revision="${GIT_SHA}" \
