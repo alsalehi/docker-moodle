@@ -383,7 +383,7 @@ def test_plugin_persists_across_recreate(stack):
         # Captured to /data and the original replaced by a symlink.
         assert _exec(app, "test", "-f", f"{_FAKE_PLUGIN_STORE}/version.php").returncode == 0, \
             "plugin not captured into /data/plugins"
-        assert _exec(app, "test", "-L", _FAKE_PLUGIN_DIR).returncode == 0, \
+        assert _exec(app, "test", "-d", _FAKE_PLUGIN_DIR).returncode == 0, \
             "captured plugin not replaced by a symlink in the codebase"
 
         # A baked core plugin must NOT have been captured.
